@@ -1,0 +1,31 @@
+{
+    "manifest_version": 2,
+    "name": "Thunderbird Junk Email Removal",
+    "description": "A basic Junk Email Removal extension! Based on specific text traits",
+    "version": "1.0",
+    "author": "Roy",
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "helloworld@yoursite.com",
+            "strict_min_version": "128.0"
+        }
+    },
+    "browser_action": {
+        "default_popup": "mainPopup/popup.html",
+        "default_title": "Remove Junk Emails",
+        "default_icon": "images/internet-32px.png"
+    },
+    "permissions": [
+        "messagesRead",
+        "accountsRead",
+        "storage",
+        "menus",
+        "notifications",
+        "messagesMove"
+    ],
+    "icons": {
+        "64": "images/internet.png",
+        "32": "images/internet-32px.png",
+        "16": "images/internet-16px.png"
+    }
+}
