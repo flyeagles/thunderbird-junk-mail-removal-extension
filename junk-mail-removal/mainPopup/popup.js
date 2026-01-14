@@ -17,19 +17,36 @@ let junkFeatures = [
     "first american home", "healthcare.com", "laseraway", "mutualofomaha", "saatva",
     "warbypark", "individual vision plan", "vivint", "debtfind", "trugreen", "somerpointe",
     "roof replace", "lymphoma", "lexington law", "keranique", "medicareadvantage",
-    "rate.com", "rba.home", "glucosemonitor", "hims.com", "home flooring", "liz buys",
+    "rate.com", "rba.home", "glucosemonitor", "hims.com", "home flooring", "liz buys","liz.buys",
     "capitalwallet", "night vision", "endurance", "empire®", "destiny master",
     "proctor subaru", "lowe’s rewards", "ameriquote", "cholesterol", "the zebra", "rfk jr",
     "heathcare.com", "insurance save", "disease risk screening", "sam’s club"
     , "sam's club", "hearing aids", "watchdogs", "claim your"
+    , ".onmicrosoft.com", "northstar-loans", "energybill cruncher", "good ranchers",
+    "insurance: save", 'ulta beauty department', 'vanguard home warranty ad'
+    , ' ad partner', 'vanguard home warranty', 'the photostick', 'santa letter'
+    ,'mcafee cyber security partner', 'lawn care', 
+    // 2026-01-13
+    'auto-shield-now', 'cheech & chong Space'
+    ,'Drive-Safe-Insure', 'EZ Insurance Bundle', 'Provide Insurance Quote', 'StopIRSDebt'
+    ,'Telluride Ski', 'ThermiVest', 'VeteranInsurance', 'rba window', 'Quick-auto-coverage'
+    ,'GetThePhotoStick', 'Frances & Patrick', 'forkfulmeal','Bathandshowerpro','Car Finance Check'
+    ,'Costa Coffee','ENLARGED PROSTATE','Omaha Steak','EZInsurance'
 ];
 
 const special_chars = new Set(["а", "е", "і", "у", "о", "ㅤ"]);
 
+let lowerJunkFeatures = [];
+for (let feature of junkFeatures) {
+    let lfeature = feature.toLowerCase();
+    lowerJunkFeatures.push(lfeature);
+}
+
+
 function isRealJunk(msg) {
-    for (let feature of junkFeatures) {
-        if ((msg.subject && msg.subject.toLowerCase().includes(feature))
-            || (msg.author && msg.author.toLowerCase().includes(feature))
+    for (let lfeature of lowerJunkFeatures) {
+        if ((msg.subject && msg.subject.toLowerCase().includes(lfeature))
+            || (msg.author && msg.author.toLowerCase().includes(lfeature))
             )
             return true;
     }
@@ -49,6 +66,31 @@ function isRealJunk(msg) {
         if (special_count >= 2)  
             return true;
     }
+
+    let space_count = 0;
+    let all_count = 0;
+    for (let ch of msg.subject.toLowerCase()) {
+        all_count += 1;
+
+        if (ch == ' ') space_count += 1;
+        
+        if (space_count > 3 && all_count < 2.5 * space_count)  
+            return true;
+    }
+
+    space_count = 0;
+    all_count = 0;
+    for (let ch of msg.author.toLowerCase()) {
+        all_count += 1;
+
+        if (ch == ' ') space_count += 1;
+        
+        if (space_count > 3 && all_count < 2.5 * space_count)  
+            return true;
+    }
+
+    if (msg.author[0] == '~') 
+        return true;
 
     return false;
 }
