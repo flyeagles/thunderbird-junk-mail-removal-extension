@@ -32,6 +32,19 @@ let junkFeatures = [
     ,'Telluride Ski', 'ThermiVest', 'VeteranInsurance', 'rba window', 'Quick-auto-coverage'
     ,'GetThePhotoStick', 'Frances & Patrick', 'forkfulmeal','Bathandshowerpro','Car Finance Check'
     ,'Costa Coffee','ENLARGED PROSTATE','Omaha Steak','EZInsurance'
+    // 2026-01-16
+    ,'ThermiVest', 'StopIRSDebt','New York Life','MiracleBrand','Health.NativePath', 'GLP-1 by MEDVi'
+    ,'Admiral UK','SpyFocus', 'Auto-Shield-Now', 'BioLife', 'Boots UK', 'Cloud storage', 'Debt - Relief'
+    , 'Debt_Relief', 'DepoProveraLawsuitClaims', 'Norton™', 'Vehicle Protection USA', 'TrimRX'
+    , 'Treatment Perspectives', 'HimsED', 'LendingForAllCredit', 'McAfee','Medscape Clinical'
+    ,'National Rail','rate advisor', 'outback steakhouse reward', 'biolife', 'ethos', 'goldco'
+    ,'liz-buys-house', 'medical negligence', 'vanguardhome', 'totalhomeauto', 'sbli.com', 'sbli '
+    ,'optima_tax','optima - tax', 'tax_relief', 'nightvision', 'mine visa', 'mine credit'
+    ,'soundbright','shinyhunter','shedx ','renewalbyanders','nurture life','meet seniors','gambling app'
+    ,'cornerstone law','brinkshome','shedrx','rate mortgage','nyl insurance','jenny craig','bankrate'
+    ,'annuity','Car Finance Claims','eharmoney', 'getsafestreet','hims partner','insurance_save','medvi support'
+    ,'rushpermit','roof saving','reverse mortgage','glamory skin','brinks home','rate equity','pedagio'
+    ,'pcp refund','Non-Hodgkins','dealwiki','miraclesheet'
 ];
 
 const special_chars = new Set(["а", "е", "і", "у", "о", "ㅤ"]);
@@ -105,7 +118,9 @@ async function moveSpecialMessagesToTrash() {
     for (let account of accounts) {
         for (let folder of account.folders) {
             if (folder.name === "Junk") junkFolder = folder;
+            if (folder.name === "垃圾邮件") junkFolder = folder;
             if (folder.name === "Trash") trashFolder = folder;
+            if (folder.name === "废件箱") trashFolder = folder;
         }
         if (junkFolder && trashFolder) break;
     }
