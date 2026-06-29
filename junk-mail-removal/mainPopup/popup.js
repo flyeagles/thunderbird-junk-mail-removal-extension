@@ -44,7 +44,7 @@ let junkFeatures = [
     ,'cornerstone law','brinkshome','shedrx','rate mortgage','nyl insurance','jenny craig','bankrate'
     ,'annuity','Car Finance Claims','eharmoney', 'getsafestreet','hims partner','insurance_save','medvi support'
     ,'rushpermit','roof saving','reverse mortgage','glamory skin','brinks home','rate equity','pedagio'
-    ,'pcp refund','Non-Hodgkins','dealwiki','miraclesheet'
+    ,'pcp refund','Non-Hodgkins','dealwiki','miraclesheet','accuquote','rba replace','rate heloc','carwow'
 ];
 
 const special_chars = new Set(["а", "е", "і", "у", "о", "ㅤ"]);
