@@ -1,4 +1,5 @@
 import argparse
+import datetime 
 
 parser = argparse.ArgumentParser(description='my LLM for spam check')
 # parser.add_argument('filename', type=str, help='要处理的文件名')  # 位置参数，必填
@@ -34,6 +35,7 @@ def get_device():
 device = get_device()
 print("Device:", device)
 
+
 import tiktoken
 
 tokenizer = tiktoken.get_encoding("gpt2")
@@ -51,13 +53,14 @@ def show_main_module_version():
                 "numpy",       # PyTorch & TensorFlow dependency
                 "tiktoken",    # Tokenizer
                 "torch",       # Deep learning library
-                # "tensorflow",  # For OpenAI's pretrained weights
+                "tensorflow",  # For OpenAI's pretrained weights
                 "pandas"       # Dataset loading
             ]
     for p in pkgs:
         print(f"{p} version: {version(p)}")
 
 show_main_module_version()
+
 
 
 from pathlib import Path
@@ -123,6 +126,8 @@ if args.train:
 
     # print(df)
 
+
+
 if args.train:
 
     print(df["Label"].value_counts())
@@ -179,6 +184,7 @@ if args.train:
     test_df.to_csv("test.csv", index=None)
 
 
+
 from torch.utils.data import Dataset
 
 
@@ -230,6 +236,8 @@ class SpamDataset(Dataset):
         # return max(len(encoded_text) for encoded_text in self.encoded_texts)
 
 max_length = 120
+
+
 
 if args.train:
 
@@ -349,8 +357,10 @@ if args.get_model:
     # from llms_from_scratch.ch04 import GPTModel
     # from llms_from_scratch.ch05 import download_and_load_gpt2, load_weights_into_gpt
 
+
     model_size = CHOOSE_MODEL.split(" ")[-1].lstrip("(").rstrip(")")
     settings, params = download_and_load_gpt2(model_size=model_size, models_dir="gpt2")
+
 
     model = GPTModel(BASE_CONFIG)
     load_weights_into_gpt(model, params)
@@ -389,6 +399,7 @@ if args.get_model:
     )
 
     print(token_ids_to_text(token_ids, tokenizer))
+
 
 else:
     model = GPTModel(BASE_CONFIG)
@@ -475,9 +486,11 @@ if args.train:
     val_accuracy = calc_accuracy_loader(val_loader, model, device, num_batches=10)
     test_accuracy = calc_accuracy_loader(test_loader, model, device, num_batches=10)
 
+
     print(f"Training accuracy: {train_accuracy*100:.2f}%")
     print(f"Validation accuracy: {val_accuracy*100:.2f}%")
     print(f"Test accuracy: {test_accuracy*100:.2f}%")
+
 
 
     def calc_loss_batch(input_batch, target_batch, model, device):
@@ -524,7 +537,7 @@ if args.train:
 
         # Main training loop
         for epoch in range(num_epochs):
-            print(f'Running epoch {epoch}.')
+            print(datetime.datetime.now(), f'Running epoch {epoch}.')
             model.train()  # Set model to training mode
 
             for input_batch, target_batch in train_loader:
@@ -537,7 +550,6 @@ if args.train:
                 examples_seen += input_batch.shape[0] # New: track examples instead of tokens
                 global_step += 1
 
-                # print(f"Use example count total {examples_seen}")
 
                 # Optional evaluation step
                 if global_step % eval_freq == 0:
@@ -545,13 +557,15 @@ if args.train:
                         model, train_loader, val_loader, device, eval_iter)
                     train_losses.append(train_loss)
                     val_losses.append(val_loss)
-                    print(f"Ep {epoch+1} (Step {global_step:06d}): "
+                    print(datetime.datetime.now(), f"Ep {epoch+1} (Step {global_step:06d}): "
                         f"Train loss {train_loss:.3f}, Val loss {val_loss:.3f}")
+    
+                    print(datetime.datetime.now(), f"Use example count total {examples_seen}")
 
             # Calculate accuracy after each epoch
             train_accuracy = calc_accuracy_loader(train_loader, model, device, num_batches=eval_iter)
             val_accuracy = calc_accuracy_loader(val_loader, model, device, num_batches=eval_iter)
-            print(f"Training accuracy: {train_accuracy*100:.2f}% | ", end="")
+            print(datetime.datetime.now(), f"Training accuracy: {train_accuracy*100:.2f}% | ", end="")
             print(f"Validation accuracy: {val_accuracy*100:.2f}%")
             train_accs.append(train_accuracy)
             val_accs.append(val_accuracy)
@@ -577,10 +591,9 @@ if args.train:
     print('Start training.')
 
 
-
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5, weight_decay=0.1)
     print('After AdamW')
-    num_epochs = 5
+    num_epochs = 2
     train_losses, val_losses, train_accs, val_accs, examples_seen = train_classifier_simple(
         model, train_loader, val_loader, optimizer, device,
         num_epochs=num_epochs, eval_freq=50, eval_iter=5,
