@@ -45,6 +45,33 @@ let junkFeatures = [
     ,'annuity','Car Finance Claims','eharmoney', 'getsafestreet','hims partner','insurance_save','medvi support'
     ,'rushpermit','roof saving','reverse mortgage','glamory skin','brinks home','rate equity','pedagio'
     ,'pcp refund','Non-Hodgkins','dealwiki','miraclesheet','accuquote','rba replace','rate heloc','carwow'
+    // 2026-08-18
+    ,'CloudAccountAlert','ColonialPenn','EasyCanvasDesign','Foot Relief Offer','Free AAA Car','Hidden Jack'
+    ,'Home Gutter Alert','Home Warranty Service','House Project Pro','InstaRx','loanDepot','Milestone Mastercard'
+    ,'Milestone-Mastercard','PrimeWarranty','Rugiet Care','StopWatt','Visible Partner','WestShoreHome','YouthAddiction'
+    ,'WindowNation','WEGO6 Capsule','RYH Flooring','Quiet Nerves','Prostate Relief','Prostate Wellness','Roota Hair'
+    ,'MYCHART_MEDICARE','Mortgage Savings','LadderLife','HorseWood','Gift from Ace Hardware','Free Spin Alert'
+    ,'Cloud_Storage','Cloud Backup','ClearChoice Dental','CBS News Health','CardioFlush','Bupa Customer','British Gas'
+    ,'Bath Saving','BathWrapsPromo','BetnJet','BarkBox','Milestone Card','Ace Hardware','AA Member','ABC Health'
+    ,'AA UK','Accredited Debt','BM Spins','Cash for Your Gold','ClearChoice','Cognitive Science Group','Direct Meds'
+    ,'NDR Affiliate','NDR Ad','Prime Network','Prime Video','Prime Access','Prime Membership','SXM','SiriusXM Expiration'
+    ,'Sciatica','Sams Club Expiration','Zanory Climate','AA Breakdown','AA Patrol','Car Insurance','Glyco Hawaiian'
+    ,'HarmoBrain','Hemp Gummies','HouseProjectPro','Lulutox','Medvi ','MyChart','Natural Sight','Norton Security ALERT'
+    ,'NeuroFlush','Ozempic','ServicePlus Home','AAA Reward','Amazon Gadgets','Better Health','Brain Honey','Brain Health'
+    ,'CyberProtection','Debt HelpLine','Destiny Reward','Disney +','Disney+','DocWire','GelaBurn','Glucose'
+    ,'Health Daily','HexClad','Hulu Expiration','Insurance.Save','LendingForBadCredit','Mind & Memory Daily','Paramount+'
+    ,'Window Nation','Windows For Everyone','Real News Invest','Prostate Protocol','Lisa from Walmart','Glacier Breeze'
+    ,'Destiny Card','Harbor Freight'
+    // 2026-09-18
+    ,'Your IDiyas USPTO Weekly','ALDI Card', 'yBETS','TrustedHomeOffer','AA Reward','Tails.com','Sugar Defender'
+    ,'Start your winning','SpinKong','SolarQuote','Slotaza','Shopsale','Coffee Secret','Riverbend Ranch Deal'
+    ,'Rewards UK','Rewards Desk','Portable AC','Play from anywhere','Pharmacy2U','PCP Claim','Ozalyn','One chance'
+    ,'Night Guard','NDR Partner','MagicWin','Loft Insulation','LawsuitFinder','Last Chance','Kroger','Janice Smith'
+    ,'Instacart','iCloud Termination Team','Home Energy Support','Health Reminder','GoPrivateHealth','GlucoSteady'
+    ,'Get spinning','Glokore','GET BONUS','Games online','GALAXY1','FreeSpins','Home Energy Team','Free spins'
+    ,'Fire JackPots','EMSense','Dust-Free Home','Chad Walding','Desenrola','Degree Network','Daily Bonus Team'
+    ,'CoreRelief','Funds Approval Team','Norton Auto-Renew','Affordable Roof','Bad Credit Loan','BadCreditLoan'
+    ,'Belly Fat','Big Jackpot','Bravo Play Reward','Cash out today','Hidden Treasure','Solar Quote'
 ];
 
 const special_chars = new Set(["а", "е", "і", "у", "о", "ㅤ"]);
@@ -56,7 +83,42 @@ for (let feature of junkFeatures) {
 }
 
 
-function isRealJunk(msg) {
+let train = false;
+
+async function isRealJunk(msg) {
+
+    try {
+
+        let author_obj = await messenger.messengerUtilities.parseMailboxString(msg.author);
+        const email = author_obj[0].email;
+
+        const url = 'http://192.168.1.132:5000/spam?email='+email;
+        // console.log(`Calling API for email ${email}: ${url}`);
+
+        const response = await fetch(url, {
+            method: "GET",
+            // headers: {
+            //     "Accept": "application/json"
+            // }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.text();
+        console.log(`API response for email ${email}: ${data}`);
+
+        if (data == 'spam') {
+            return true;
+        }
+    } catch (err) {
+        console.error("API call failed:", err);
+    }    
+
+    return false;
+
+
     for (let lfeature of lowerJunkFeatures) {
         if ((msg.subject && msg.subject.toLowerCase().includes(lfeature))
             || (msg.author && msg.author.toLowerCase().includes(lfeature))
@@ -109,7 +171,6 @@ function isRealJunk(msg) {
 }
 
 
-
 async function moveSpecialMessagesToTrash() {
     let accounts = await browser.accounts.list();
     let junkFolder, trashFolder;
@@ -117,10 +178,17 @@ async function moveSpecialMessagesToTrash() {
     // Find Junk and Trash folders
     for (let account of accounts) {
         for (let folder of account.folders) {
+            console.log(`Checking folder: ${folder.name}`);
+
             if (folder.name === "Junk") junkFolder = folder;
             if (folder.name === "垃圾邮件") junkFolder = folder;
             if (folder.name === "Trash") trashFolder = folder;
             if (folder.name === "废件箱") trashFolder = folder;
+
+            // use for get emails list  
+            if (train) {
+                junkFolder = trashFolder;
+            }
         }
         if (junkFolder && trashFolder) break;
     }
@@ -140,18 +208,41 @@ async function moveSpecialMessagesToTrash() {
         allMessages.push(...list.messages);
     }
 
+    let long_log = "";
+
+    let matchingMessages = [];
     for (let message of allMessages) {
+
+        if (train) {
+            let author_obj = await messenger.messengerUtilities.parseMailboxString(message.author);
+
+            long_log += author_obj[0].email + "\n";
+        }
+
+        /*
         console.log({
             // id: message.id,
             subject: message.subject.toLowerCase(),
             author: message.author.toLowerCase(),
+            email: author_obj[0].email,
             date: message.date,
             // recipients: message.recipients,
         });
+        */
+       if (await isRealJunk(message)) {
+            matchingMessages.push(message);
+        }
     }
 
+    if (train) {
+        console.log(long_log);
+        matchingMessages = [];
+    }
+
+    console.log(`Found ${matchingMessages.length} spam messages in Junk folder.`);
+
     // Filter messages with "special" in subject
-    let matchingMessages = allMessages.filter(msg => isRealJunk(msg) );
+    // let matchingMessages = allMessages.filter(msg => checkMessageSender(msg) );
 
     // Move them to Trash
     if (matchingMessages.length > 0) {

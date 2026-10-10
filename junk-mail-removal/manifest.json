@@ -22,7 +22,9 @@
         "menus",
         "notifications",
         "messagesMove"
+        , "http://192.168.1.132:5000/*"
     ],
+
     "icons": {
         "64": "images/internet.png",
         "32": "images/internet-32px.png",
